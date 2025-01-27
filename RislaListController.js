@@ -92,7 +92,7 @@ const addTosubscribe = async (req, res) => {
     // Update the document with the given ID
     const saveData = await RisalaList.findByIdAndUpdate(
       id,
-      { $set: { status: "suscribed" } }, // Update query
+      { $set: { status: "subscribed" } }, // Update query
       { new: true } // Return the updated document
     );
 
