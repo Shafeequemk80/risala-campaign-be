@@ -1,11 +1,13 @@
-const RislaList = require("./RislaListModel");
+const RisalaList = require("./RisalaListModel");
+const RisalaTarget = require("./risalaCounteModel");
 
-const addHopeList = async (req, res) => {
+
+const addPossibilityList = async (req, res) => {
   try {
     const { type, name } = req.body;
     const { unit } = req.params;
 
-    const saveData = new RislaList({
+    const saveData = new RisalaList({
       unit, // Include the unit field
       type,
       name,
@@ -24,11 +26,11 @@ const addHopeList = async (req, res) => {
   }
 };
 
-const getHopeList = async (req, res) => {
+const getPossibilityList = async (req, res) => {
   try {
     const { unit } = req.params;
 
-    const getData = await RislaList.find({ unit, status: "hope" });
+    const getData = await RisalaList.find({ unit, status: "possibility" });
 
     if (getData) {
       res.status(200).json({ message: "successful", data: getData }); // Use status 200 for success and include added data
@@ -46,7 +48,7 @@ const addTodayList = async (req, res) => {
     const { id } = req.params;
 
     // Update the document with the given ID
-    const saveData = await RislaList.findByIdAndUpdate(
+    const saveData = await RisalaList.findByIdAndUpdate(
       id,
       { $set: { status: "today" } }, // Update query
       { new: true } // Return the updated document
@@ -70,7 +72,7 @@ const getTodayList = async (req, res) => {
   try {
     const { unit } = req.params;
 
-    const getData = await RislaList.find({ unit, status: "today" });
+    const getData = await RisalaList.find({ unit, status: "today" });
 
     if (getData) {
       res.status(200).json({ message: "successful", data: getData }); // Use status 200 for success and include added data
@@ -88,7 +90,7 @@ const addTosubscribe = async (req, res) => {
     const { id } = req.params;
 
     // Update the document with the given ID
-    const saveData = await RislaList.findByIdAndUpdate(
+    const saveData = await RisalaList.findByIdAndUpdate(
       id,
       { $set: { status: "suscribed" } }, // Update query
       { new: true } // Return the updated document
@@ -113,7 +115,7 @@ const addToRejected = async (req, res) => {
     const { id } = req.params;
 
     // Update the document with the given ID
-    const saveData = await RislaList.findByIdAndUpdate(
+    const saveData = await RisalaList.findByIdAndUpdate(
       id,
       { $set: { status: "rejected" } }, // Update query
       { new: true } // Return the updated document
@@ -137,7 +139,7 @@ const getsubscribeList =async (req, res) => {
   try {
     const { unit } = req.params;
 
-    const getData = await RislaList.find({ unit, status: "suscribed" });
+    const getData = await RisalaList.find({ unit, status: "subscribed" });
 
     if (getData) {
       res.status(200).json({ message: "successful", data: getData }); // Use status 200 for success and include added data
@@ -154,7 +156,7 @@ const getrejectedList =async (req, res) => {
   try {
     const { unit } = req.params;
 
-    const getData = await RislaList.find({ unit, status: "rejected" });
+    const getData = await RisalaList.find({ unit, status: "rejected" });
 
     if (getData) {
       res.status(200).json({ message: "successful", data: getData }); // Use status 200 for success and include added data
@@ -168,14 +170,63 @@ const getrejectedList =async (req, res) => {
 };
 
 
+const getCount = async (req, res) => {
+  try {
+    const { unit } = req.params;
+
+    // Find the target by unit name
+    const getTarget = await RisalaTarget.findOne({ unitName: unit });
+
+    // Find the subscribed list for the given unit
+    const subscribeCount = await RisalaList.countDocuments({  unit, status: 'subscribed' });
+    
+
+
+    // Send the response back with the retrieved data
+    res.status(200).json({
+      target: getTarget.target,
+      subscribedCount: subscribeCount,
+    
+    });
+  } catch (error) {
+    console.error('Error in getCount:', error);
+    res.status(500).json({ error: 'An error occurred while retrieving data.' });
+  }
+};
+
+const addUnitCount = async (req, res) => {
+  try {
+    const { unitName, target } = req.body; // Use req.body for input
+
+    // Create a new document
+    const saveCount = new RisalaTarget({
+      unitName,
+      target,
+    });
+
+    // Save the document to the database
+    const result = await saveCount.save();
+
+    // Send a success response
+    res.status(201).json({
+      message: 'Unit count added successfully',
+      data: result,
+    });
+  } catch (error) {
+    console.error('Error in addUnitCount:', error);
+    res.status(500).json({ error: 'An error occurred while adding unit count' });
+  }
+};
+
 module.exports = {
-  addHopeList,
-  getHopeList,
+  addPossibilityList,
+  getPossibilityList,
   addTodayList,
   getTodayList,
   addTosubscribe,
   addToRejected,
   getsubscribeList,
-  getrejectedList
-  
+  getrejectedList,
+  getCount,
+  addUnitCount
 };

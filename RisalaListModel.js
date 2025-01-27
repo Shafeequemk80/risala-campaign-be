@@ -14,10 +14,10 @@ const RislaListSchema= mongoose.Schema({
     },
     status:{
         type:String,
-        default:"hope",
-        enum:["hope", 'today', 'suscribed', 'rejected']
+        default:"possibility",
+        enum:["possibility", 'today', 'suscribed', 'rejected']
     }
 })
 
-const RislaList= mongoose.model('RislaList',RislaListSchema)
-module.exports=RislaList
+const RisalaList= mongoose.model('RisalaList',RislaListSchema)
+module.exports=RisalaList
